@@ -41,9 +41,10 @@ const massSend = async (list: Nft[], to: String) => {
       tx.add(
         createAssociatedTokenAccountInstruction(
           fromPublicKey,
-          fromTokenAccount,
-          fromPublicKey,
+          destTokenAccount,
+          destPublicKey,
           mintPublicKey,
+          TOKEN_PROGRAM_ID,
           ASSOCIATED_TOKEN_PROGRAM_ID
         )
       )
@@ -51,8 +52,8 @@ const massSend = async (list: Nft[], to: String) => {
 
     tx.add(
       createTransferInstruction(
-        fromPublicKey,
-        destPublicKey,
+        fromTokenAccount,
+        destTokenAccount,
         fromPublicKey,
         1
       )
