@@ -204,7 +204,7 @@ const Home: NextPage = () => {
                   }}
                   className='block ml-10 text-white bg-blue-600'
                 >
-                  x
+                  remove
                 </button>
               </li>
               ))}
