@@ -19,15 +19,25 @@ const { publicKey, signTransaction } = useWallet()
 const { connection } = useConnection()
 
 const massSend = async (list: Nft[], to: String) => {
-  
-   
   if (!list || !to || !connection|| !publicKey || !signTransaction) {
     console.log('returning')
      return
   }
 
+  try { 
+    new PublicKey(to)
+    console.log("valid dest address: ", to)
+  }catch(e: any){
+    console.log("bad dest address")
+    return
+  }
+
+  if (!list.length){
+    console.log("probably want to select some nfts")
+    return
+  }
+
   const tx = new Transaction()
-  // THIS NEEDS FIXING
   for (var i = 0; i < list.length; i++){
   
     const mintPublicKey = new PublicKey(list[i].mintAddress); 
@@ -116,6 +126,7 @@ interface Nft {
 
 const [nfts, setNfts] = useState<Nft[]>([])
 const [sending, setSending] = useState<Nft[]>([])
+const [to, setTo] = useState("")
 
   useMemo(()=>{
     if (publicKey?.toBase58()){
@@ -156,8 +167,9 @@ const [sending, setSending] = useState<Nft[]>([])
           </div>
           <div>
             <h2>To send</h2>
+            <input type="text" placeholder='pubkey address' onChange={(e)=>{setTo(e.target.value)}}/>
             <ul>{sending.map((e)=><li>{e.name}</li>)}</ul>
-            <button onClick={()=>massSend(sending, "232PpcrPc6Kz7geafvbRzt5HnHP4kX88yvzUCN69WXQC")} className="border border-black">Send them</button>
+            <button onClick={()=>massSend(sending, to)} className="border border-black">Send them</button>
           </div>
         </div>
         
