@@ -15,21 +15,24 @@ import { createAssociatedTokenAccountInstruction, getAssociatedTokenAddress, get
 
 
 const Home: NextPage = () => {
-const { publicKey, sendTransaction } = useWallet()
+const { publicKey, signTransaction } = useWallet()
+const { connection } = useConnection()
 
 const massSend = async (list: Nft[], to: String) => {
-  const { connection } = useConnection()
+  
    
-  if (!list || !to || !connection|| !publicKey) {
+  if (!list || !to || !connection|| !publicKey || !signTransaction) {
+    console.log('returning')
      return
   }
 
   const tx = new Transaction()
   // THIS NEEDS FIXING
-  list.map((nft: Nft)=>{
-    const mintPublicKey = new PublicKey(nft.mintAddress); 
-    const fromTokenAccount = await getAssociatedTokenAddress(mintPublicKey, new PublicKey(publicKey))
-    const fromPublicKey = new PublicKey(publicKey)
+  for (var i = 0; i < list.length; i++){
+  
+    const mintPublicKey = new PublicKey(list[i].mintAddress); 
+    const fromTokenAccount = await getAssociatedTokenAddress(mintPublicKey, publicKey)
+    const fromPublicKey = publicKey
     const destPublicKey = new PublicKey(to);
     const destTokenAccount = await getAssociatedTokenAddress(mintPublicKey, destPublicKey)
     const receiverAccount = await connection.getAccountInfo(destTokenAccount)
@@ -54,7 +57,28 @@ const massSend = async (list: Nft[], to: String) => {
         1
       )
     )
-  })
+  }
+  tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash
+  tx.feePayer = publicKey
+
+  let signed: Transaction | undefined = undefined
+
+  try {
+    signed = await signTransaction(tx)
+  } catch (e: any) {
+    console.log(e.message)
+    return
+  }
+
+  let signature: string | undefined = undefined
+
+  try {
+    signature = await connection.sendRawTransaction(signed.serialize())
+
+    await connection.confirmTransaction(signature, 'confirmed')
+  }catch (e: any){
+    console.log(e.message)
+  }
 }
 
 const GET_NFTS = gql`
@@ -132,7 +156,7 @@ const [sending, setSending] = useState<Nft[]>([])
           <div>
             <h2>To send</h2>
             <ul>{sending.map((e)=><li>{e.name}</li>)}</ul>
-            <button onClick={()=>massSend(sending)} className="border border-black">Send them</button>
+            <button onClick={()=>massSend(sending, "232PpcrPc6Kz7geafvbRzt5HnHP4kX88yvzUCN69WXQC")} className="border border-black">Send them</button>
           </div>
         </div>
         
