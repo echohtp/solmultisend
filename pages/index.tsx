@@ -162,7 +162,7 @@ const [to, setTo] = useState("")
         <div className='grid grid-cols-2 gap-2'>
           <div>
           <ul>
-          {nfts.map((e)=><li style={{"border": "solid 1px black", "marginTop": "10px"}}>{e.name}<button onClick={()=>setSending([...sending, e])} className='ml-10 text-white bg-blue-600'>Send it</button></li>)}
+          {nfts.map((e)=><li className="flex" style={{"border": "solid 1px black", "marginTop": "10px"}}><img src={e.image} width={"50px"}/><span className='block'>{e.name}</span><button className="block" onClick={()=>setSending([...sending, e])} className='ml-10 text-white bg-blue-600'>Send it</button></li>)}
         </ul>
           </div>
           <div>
