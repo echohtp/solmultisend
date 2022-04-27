@@ -167,7 +167,7 @@ const [to, setTo] = useState("")
           </div>
           <div>
             <h2>To send</h2>
-            <input type="text" placeholder='pubkey address' onChange={(e)=>{setTo(e.target.value)}}/>
+            <input type="text" className="" placeholder='pubkey address' onChange={(e)=>{setTo(e.target.value)}}/>
             <ul>{sending.map((e)=><li>{e.name}</li>)}</ul>
             <button onClick={()=>massSend(sending, to)} className="border border-black">Send them</button>
           </div>
