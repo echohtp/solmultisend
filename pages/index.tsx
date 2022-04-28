@@ -180,6 +180,7 @@ const Home: NextPage = () => {
         <div className='grid grid-cols-4 gap-4'>
           {nfts.map(e => (
             <NftCard
+              key={Math.random()}
               image={e.image}
               name={e.name}
               unselect={() => {
@@ -218,7 +219,7 @@ const Home: NextPage = () => {
                   <h1>Select some nfts to send fren!</h1>
                 )}
                 {sending.map(s => (
-                  <div className='flex flex-row mb-2 border border-white'>
+                  <div className='flex flex-row mb-2 border border-white' key={Math.random()}>
                     <img src={s.image} width={'75px'} />
                     <p>{s.name}</p>
                     <button
