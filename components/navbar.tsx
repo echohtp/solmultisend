@@ -1,10 +1,16 @@
+import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui'
 
 import Link from 'next/link';
 import { useState } from 'react';
 
-export const Navbar = () => {
+interface NavbarProps {
+  sending: number
+}
+
+export const Navbar = (props: aNavbarPropsny) => {
   const [active, setActive] = useState(false);
+  const {connected} = useWallet()
 
   const handleClick = () => {
     setActive(!active);
@@ -34,7 +40,7 @@ export const Navbar = () => {
           
         </Link>
         <button
-          className='inline-flex p-3 ml-auto rounded outline-none  lg:hidden'
+          className='inline-flex p-3 ml-auto rounded outline-none lg:hidden'
           onClick={handleClick}
         >
           <svg
@@ -59,6 +65,21 @@ export const Navbar = () => {
           }   w-full lg:inline-flex lg:flex-grow lg:w-auto`}
         >
           <div className='flex flex-col items-start w-full lg:inline-flex lg:flex-row lg:ml-auto lg:w-auto lg:items-center lg:h-auto'>
+          {connected && (
+          <div className='mr-4 indicator'>
+            {props.sending > 0 && (
+              <span className='indicator-item badge badge-secondary'>
+                {props.sending}
+              </span>
+            )}
+            <div className=''>
+              {' '}
+              <label htmlFor='my-modal-3' className='btn modal-button'>
+                <span>🛒</span>
+              </label>
+            </div>
+          </div>
+        )}
           <WalletMultiButton />
           </div>
         </div>
