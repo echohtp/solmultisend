@@ -16,7 +16,6 @@ import {
   createTransferInstruction
 } from '@solana/spl-token'
 import { NftCard } from '../components/nftCard'
-import { Toast } from 'react-toastify/dist/components'
 
 enum transactionState {
   NONE,
@@ -121,16 +120,6 @@ const Home: NextPage = () => {
       setTxState(transactionState.DONE)
       toast.success('Transaction successful')
       // WE HAVE TO REFETCH WALLET DATA HERE
-      client
-        .query({
-          query: GET_NFTS,
-          variables: {
-            owners: [publicKey?.toBase58()],
-            offset: 0,
-            limit: 200
-          }
-        })
-        .then(res => setNfts(res.data.nfts))
     } catch (e) {
       toast.error(e.message)
     }
