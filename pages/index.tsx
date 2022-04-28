@@ -118,7 +118,7 @@ const Home: NextPage = () => {
       signature = await connection.sendRawTransaction(signed.serialize())
       setTxState(transactionState.SENDING)
       await connection.confirmTransaction(signature, 'confirmed')
-      setTxState(transactionState.DONE)
+
       toast.success('Transaction successful')
       // WE HAVE TO REFETCH WALLET DATA HERE
       // for now remove them from the list
@@ -126,6 +126,7 @@ const Home: NextPage = () => {
         setNfts(nfts.filter(n => !sending.includes(n)))
       })
       setSending([])
+      setTxState(transactionState.NONE)
     } catch (e: any) {
       toast.error(e.message)
     }
