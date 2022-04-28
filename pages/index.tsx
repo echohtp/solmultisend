@@ -16,6 +16,7 @@ import {
   createTransferInstruction
 } from '@solana/spl-token'
 import { NftCard } from '../components/nftCard'
+import { send } from 'process'
 
 enum transactionState {
   NONE,
@@ -120,6 +121,11 @@ const Home: NextPage = () => {
       setTxState(transactionState.DONE)
       toast.success('Transaction successful')
       // WE HAVE TO REFETCH WALLET DATA HERE
+      // for now remove them from the list
+      sending.map(n => {
+        setNfts(nfts.filter(n => !sending.includes(n)))
+      })
+      setSending([])
     } catch (e) {
       toast.error(e.message)
     }
@@ -168,14 +174,9 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <Navbar />
+      <Navbar sending={sending.length} />
 
       <div className='container'>
-        {connected && (
-          <label htmlFor='my-modal-3' className='btn modal-button'>
-            {sending.length === 0 ? <span>🛒</span> : sending.length}
-          </label>
-        )}
         <div className='grid grid-cols-4 gap-4'>
           {nfts.map(e => (
             <NftCard
@@ -190,24 +191,18 @@ const Home: NextPage = () => {
               selected={sending.includes(e)}
             />
           ))}
-
-          <div>
-            {nfts.length > 0 && (
-              <button
-                onClick={() => massSend(sending, to)}
-                className='border border-black'
-              >
-                Send them
-              </button>
-            )}
-          </div>
         </div>
       </div>
 
       <footer></footer>
       {/* Send Modal */}
       <input type='checkbox' id='my-modal-3' className='modal-toggle ' />
-      <div className='modal'>
+      <div
+        className='modal'
+        onBlur={() => {
+          console.log('bye bye')
+        }}
+      >
         <div className='relative modal-box'>
           <label
             htmlFor='my-modal-3'
@@ -236,9 +231,9 @@ const Home: NextPage = () => {
                     </button>
                   </div>
                 ))}
-                  <label className="label">
-                    <span className="label-text">Destination?</span>
-                  </label>
+                <label className='label'>
+                  <span className='label-text'>Destination?</span>
+                </label>
                 <input
                   type='text'
                   className='w-full max-w-xs input input-bordered'
@@ -247,15 +242,15 @@ const Home: NextPage = () => {
                     setTo(e.target.value)
                   }}
                 />
-                <div className="modal-action">
-                <button
-                  className='btn btn-primary'
-                  onClick={() => {
-                    massSend(sending, to)
-                  }}
-                >
-                  🚀
-                </button>
+                <div className='modal-action'>
+                  <button
+                    className='btn btn-primary'
+                    onClick={() => {
+                      massSend(sending, to)
+                    }}
+                  >
+                    🚀
+                  </button>
                 </div>
               </div>{' '}
             </>
