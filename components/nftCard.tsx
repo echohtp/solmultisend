@@ -7,9 +7,10 @@ interface NftCardProps {
 }
 
 export const NftCard = (props: NftCardProps) => {
+  let classes = props.selected ? 'shadow-xl w-72 card card-compact bg-base-100 border border-white' : 'shadow-xl w-72 card card-compact bg-base-100'
   return (
     <>
-      <div className='shadow-xl w-72 card card-compact bg-base-100'>
+      <div className={classes}>
         <figure>
           <img
             src={props.image}
