@@ -52,7 +52,7 @@ const Home: NextPage = () => {
       console.log('to: ', to)
       new PublicKey(to)
       console.log('valid dest address: ', to)
-    } catch (e) {
+    } catch (e: any) {
       toast.error(e.message)
       return
     }
@@ -107,7 +107,7 @@ const Home: NextPage = () => {
 
     try {
       signed = await signTransaction(tx)
-    } catch (e) {
+    } catch (e: any) {
       toast(e.message)
       return
     }
@@ -126,7 +126,7 @@ const Home: NextPage = () => {
         setNfts(nfts.filter(n => !sending.includes(n)))
       })
       setSending([])
-    } catch (e) {
+    } catch (e: any) {
       toast.error(e.message)
     }
   }
