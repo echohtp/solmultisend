@@ -15,22 +15,24 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createTransferInstruction
 } from '@solana/spl-token'
+import { NftCard } from '../components/nftCard'
 
 const Home: NextPage = () => {
   const { publicKey, signTransaction } = useWallet()
   const { connection } = useConnection()
 
-  const massSend = async (list: Nft[], to: String) => {
+  const massSend = async (list: Nft[], to: string) => {
     if (!list || !to || !connection || !publicKey || !signTransaction) {
       console.log('returning')
       return
     }
 
     try {
+      console.log("to: ", to)
       new PublicKey(to)
       console.log('valid dest address: ', to)
     } catch (e) {
-      console.log('bad dest address')
+      console.log(e.message)
       return
     }
 
@@ -40,6 +42,7 @@ const Home: NextPage = () => {
     }
 
     const tx = new Transaction()
+    console.log("trying to send ", list.length, " nfts")
     for (var i = 0; i < list.length; i++) {
       const mintPublicKey = new PublicKey(list[i].mintAddress)
       const fromTokenAccount = await getAssociatedTokenAddress(
@@ -155,60 +158,28 @@ const Home: NextPage = () => {
       <Navbar />
 
       <div className='container'>
+        <label htmlFor='my-modal-3' className='btn modal-button'>
+          {sending.length}
+        </label>
         <h1>Connected to: {publicKey?.toBase58()}</h1>
-        <div className='grid grid-cols-2 gap-2'>
-          <div>
-            <ul>
-              {nfts.map(e => (
-                <li
-                  className='flex mx-4 my-2'
-                  style={{ border: 'solid 1px black', marginTop: '10px' }}
-                >
-                  <img src={e.image} width={'50px'} />
-                  <span className='block'>{e.name}</span>
-                  <button
-                    onClick={() => {
-                      setSending([...sending, e])
-                      setNfts(nfts.filter((item)=> item !== e))
-                    }}
-                    className='block ml-10 text-white bg-blue-600'
-                  >
-                    Send it
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h2>To send</h2>
-            <input
-              type='text'
-              className=''
-              placeholder='pubkey address'
-              onChange={e => {
-                setTo(e.target.value)
+        <div className='grid grid-cols-4 gap-4'>
+          {nfts.map(e => (
+            <NftCard
+              image={e.image}
+              name={e.name}
+              unselect={() => {
+                console.log('removing')
+                setSending(sending.filter(item => item !== e))
               }}
+              select={() => {
+                console.log('adding')
+                setSending([...sending, e])
+              }}
+              selected={sending.includes(e)}
             />
-            <ul>
-              {sending.map(e => (
-                <li
-                className='flex mx-4 my-2'
-                style={{ border: 'solid 1px black', marginTop: '10px' }}
-              >
-                <img src={e.image} width={'50px'} />
-                <span className='block'>{e.name}</span>
-                <button
-                  onClick={() => {
-                    setSending(sending.filter((item)=>item !== e))
-                    setNfts([...nfts, e])
-                  }}
-                  className='block ml-10 text-white bg-blue-600'
-                >
-                  remove
-                </button>
-              </li>
-              ))}
-            </ul>
+          ))}
+
+          <div>
             <button
               onClick={() => massSend(sending, to)}
               className='border border-black'
@@ -220,6 +191,45 @@ const Home: NextPage = () => {
       </div>
 
       <footer></footer>
+      <input type='checkbox' id='my-modal-3' className='modal-toggle' />
+      <div className='modal'>
+        <div className='relative modal-box'>
+          <label
+            htmlFor='my-modal-3'
+            className='absolute btn btn-sm btn-circle right-2 top-2'
+          >
+            ✕
+          </label>
+          <h3 className='text-lg font-bold'>Send the NFS</h3>
+          <div>
+            {sending.length === 0 && <h1>Select some nfts to send fren!</h1>}
+            {sending.map(s => (
+              <div className='flex flex-row mb-2 border border-white'>
+                <img src={s.image} width={'75px'} />
+                <p>{s.name}</p>
+                <button
+                  className='btn'
+                  onClick={() => {
+                    setSending(sending.filter(item => item !== s))
+                  }}
+                >
+                  X
+                </button>
+              </div>
+            ))}
+            <h2>To send</h2>
+            <input
+              type='text'
+              className=''
+              placeholder='pubkey address'
+              onChange={e => {
+                setTo(e.target.value)
+              }}
+            />
+            <button className='btn btn-primary' onClick={()=>{ massSend(sending, to) }}>🚀</button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
